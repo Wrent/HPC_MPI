@@ -104,13 +104,19 @@ void Setup_Grid()
 
   Debug("Setup_Subgrid", 0);
 
-  f = fopen("input.dat", "r");
-  if (f == NULL)
-    Debug("Error opening input.dat", 1);
-  fscanf(f, "nx: %i\n", &gridsize[X_DIR]);
-  fscanf(f, "ny: %i\n", &gridsize[Y_DIR]);
-  fscanf(f, "precision goal: %lf\n", &precision_goal);
-  fscanf(f, "max iterations: %i\n", &max_iter);
+  if(proc_rank==0) {
+    f = fopen("input.dat", "r");
+    if (f == NULL)
+      Debug("Error opening input.dat", 1);
+    fscanf(f, "nx: %i\n", &gridsize[X_DIR]);
+    fscanf(f, "ny: %i\n", &gridsize[Y_DIR]);
+    fscanf(f, "precision goal: %lf\n", &precision_goal);
+    fscanf(f, "max iterations: %i\n", &max_iter);
+  }
+
+  MPI_Bcast(&gridsize, 2, MPI_INT, 0, MPI_COMM_WORLD);
+  MPI_Bcast(&precision_goal, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+  MPI_Bcast(&max_iter, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
   /* Calculate dimensions of local subgrid */
   dim[X_DIR] = gridsize[X_DIR] + 2;
@@ -142,9 +148,17 @@ void Setup_Grid()
   /* put sources in field */
   do
   {
-    s = fscanf(f, "source: %lf %lf %lf\n", &source_x, &source_y, &source_val);
+    if(proc_rank == 0)
+      s = fscanf(f, "source: %lf %lf %lf\n", &source_x, &source_y, &source_val);
+    
+    MPI_Bcast(&s, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
     if (s==3)
     {
+      MPI_Bcast(&source_x, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+      MPI_Bcast(&source_y, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+      MPI_Bcast(&source_val, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+
       x = source_x * gridsize[X_DIR];
       y = source_y * gridsize[Y_DIR];
       x += 1;
@@ -155,7 +169,8 @@ void Setup_Grid()
   }
   while (s==3);
 
-  fclose(f);
+  if(proc_rank == 0) 
+    fclose(f);
 }
 
 double Do_Step(int parity)
