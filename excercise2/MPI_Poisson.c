@@ -298,6 +298,7 @@ int main(int argc, char **argv)
   MPI_Init(&argc, &argv);
   Setup_Proc_Grid(argc, argv);
 
+
   start_timer();
 
   Setup_Grid();
