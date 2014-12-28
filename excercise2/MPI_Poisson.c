@@ -22,6 +22,7 @@ enum
 int gridsize[2];
 double precision_goal;		/* precision_goal of solution */
 int max_iter;			/* maximum number of iterations alowed */
+int proc_rank;
 
 /* benchmark related variables */
 clock_t ticks;			/* number of systemticks */
@@ -196,7 +197,7 @@ void Solve()
     count++;
   }
 
-  printf("Number of iterations : %i\n", count);
+  printf("(%i) Number of iterations : %i\n", proc_rank, count);
 }
 
 void Write_Grid()
