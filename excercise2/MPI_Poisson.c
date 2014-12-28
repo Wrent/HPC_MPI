@@ -286,7 +286,7 @@ void Setup_Proc_Grid(int argc, char **argv) {
 
   printf("(%i) (x,y)=(%i,%i)\n", proc_rank, proc_coord[X_DIR], proc_coord[Y_DIR]);
 
-  MPI_Cart_shift(grid_comm, Y_DIR, 1, &proc_top, &proc_bottom);
+  MPI_Cart_shift(grid_comm, Y_DIR, 1, &proc_bottom, &proc_top);
   MPI_Cart_shift(grid_comm, X_DIR, 1, &proc_left, &proc_right);
 
   //if(DEBUG)
