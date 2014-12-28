@@ -9,7 +9,7 @@
 #include <math.h>
 #include <time.h>
 
-#define DEBUG 0
+#define DEBUG 1
 
 #define max(a,b) ((a)>(b)?a:b)
 
@@ -306,7 +306,7 @@ void Setup_Proc_Grid(int argc, char **argv) {
   MPI_Cart_shift(grid_comm, Y_DIR, 1, &proc_bottom, &proc_top);
   MPI_Cart_shift(grid_comm, X_DIR, 1, &proc_left, &proc_right);
 
-  //if(DEBUG)
+  if(DEBUG)
     printf("(%i) top %i, right %i, bottom %i, left %i\n", proc_rank, proc_top, proc_right, proc_bottom, proc_left);
 }
 
