@@ -9,7 +9,7 @@
 #include <math.h>
 #include <time.h>
 
-#define DEBUG 1
+#define DEBUG 0
 
 #define max(a,b) ((a)>(b)?a:b)
 
@@ -105,7 +105,7 @@ void Setup_Grid()
   Debug("Setup_Subgrid", 0);
 
   if(proc_rank==0) {
-    Debug("opening", 0);
+    print("opening");
     f = fopen("input.dat", "r");
     if (f == NULL)
       Debug("Error opening input.dat", 1);
