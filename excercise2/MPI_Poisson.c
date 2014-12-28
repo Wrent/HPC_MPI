@@ -22,7 +22,7 @@ enum
 int gridsize[2];
 double precision_goal;		/* precision_goal of solution */
 int max_iter;			/* maximum number of iterations alowed */
-int proc_rank;
+int proc_rank, np;
 
 /* benchmark related variables */
 clock_t ticks;			/* number of systemticks */
@@ -230,6 +230,9 @@ void Clean_Up()
 int main(int argc, char **argv)
 {
   MPI_Init(&argc, &argv);
+  MPI_Comm_size(MPI_COMM_WORLD, &np);
+  MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
+
   start_timer();
 
   Setup_Grid();
