@@ -101,7 +101,7 @@ void print_timer()
 void Debug(char *mesg, int terminate)
 {
   if (DEBUG || terminate)
-    printf("%s\n", mesg);
+    printf("(%i) %s\n", proc_rank, mesg);
   if (terminate)
     exit(1);
 }
