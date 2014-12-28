@@ -22,7 +22,15 @@ enum
 int gridsize[2];
 double precision_goal;		/* precision_goal of solution */
 int max_iter;			/* maximum number of iterations alowed */
-int proc_rank, np;
+int proc_rank;
+
+int proc_coord[2];
+int proc_top, proc_right, proc_bottom, proc_left;
+
+int P;
+int P_grid[2];
+MPI_Comm grid_comm;
+MPI_Status statis;
 
 /* benchmark related variables */
 clock_t ticks;			/* number of systemticks */
@@ -105,7 +113,6 @@ void Setup_Grid()
   Debug("Setup_Subgrid", 0);
 
   if(proc_rank==0) {
-    print("opening");
     f = fopen("input.dat", "r");
     if (f == NULL)
       Debug("Error opening input.dat", 1);
@@ -252,11 +259,44 @@ void Clean_Up()
   free(source);
 }
 
+void Setup_Proc_Grid(int argc, char **argv) {
+  int wrap_around[2];
+  int reorder;
+
+  Debug("My_MPI_Init", 0);
+
+  MPI_Comm_size(MPI_COMM_WORLD, &P);
+
+  if(argc > 2) {
+    P_grid[X_DIR] = atoi(argv[1]);
+    P_grid[Y_DIR] = atoi(argv[2]);
+    if(P_grid[X_DIR] * P_grid[Y_DIR] != P)
+      Debug("ERROR: Process grid dimensions do not match with P ", 1);
+  }
+  else
+    Debug("ERROR: Wrong parameter input", 1);
+
+  wrap_around[X_DIR] = 0;
+  wrap_around[Y_DIR] = 0;
+  reorder = 1;
+  MPI_Cart_create(MPI_COMM_WORLD, 2, P_grid, wrap_around, reorder, grid_comm);
+
+  MPI_Comm_rank(grid_comm, &proc_rank);
+  MPI_Cart_coords(grid_comm, proc_rank, 2, proc_coord);
+
+  printf("(%i) (x,y)=(%i,%i)\n", proc_rank, proc_coord[X_DIR], proc_coord[Y_DIR]);
+
+  MPI_Cart_shift(grid_comm, Y_DIR, 1, proc_top, proc_bottom);
+  MPI_Cart_shift(grid_comm, X_DIR, 1, proc_left, proc_right);
+
+  //if(DEBUG)
+    printf("(%i) top %i, right %i, bottom %i, left %i\n", proc_rank, proc_top, proc_right, proc_bottom, proc_left);
+}
+
 int main(int argc, char **argv)
 {
   MPI_Init(&argc, &argv);
-  MPI_Comm_size(MPI_COMM_WORLD, &np);
-  MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
+  Setup_Proc_Grid(argc, argv);
 
   start_timer();
 
