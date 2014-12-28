@@ -239,6 +239,7 @@ void Solve()
     delta2 = Do_Step(1);
 
     delta = max(delta1, delta2);
+    printf("(%i) %f\n", delta);
     count++;
   }
 
