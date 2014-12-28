@@ -27,6 +27,7 @@ int proc_rank, np;
 /* benchmark related variables */
 clock_t ticks;			/* number of systemticks */
 int timer_on = 0;		/* is timer running? */
+double wtime;
 
 /* local grid related variables */
 double **phi;			/* grid */
@@ -48,7 +49,9 @@ void start_timer()
 {
   if (!timer_on)
   {
+    MPI_Barrier(MPI_COMM_WORLD);
     ticks = clock();
+    wtime = MPI_Wtime();
     timer_on = 1;
   }
 }
@@ -58,6 +61,7 @@ void resume_timer()
   if (!timer_on)
   {
     ticks = clock() - ticks;
+    wtime = MPI_Wtime() - wtime;
     timer_on = 1;
   }
 }
@@ -67,6 +71,7 @@ void stop_timer()
   if (timer_on)
   {
     ticks = clock() - ticks;
+    wtime = MPI_Wtime - wtime;
     timer_on = 0;
   }
 }
@@ -76,11 +81,11 @@ void print_timer()
   if (timer_on)
   {
     stop_timer();
-    printf("Elapsed processortime: %14.6f s\n", ticks * (1.0 / CLOCKS_PER_SEC));
+    printf("(%i) Elapsed Wtime: %14.6f s (%5.1f%% CPU)\n", proc_rank, wtime, 100.0*ticks*(1.0/CLOCKS_PER_SEC) / wtime);
     resume_timer();
   }
   else
-    printf("Elapsed processortime: %14.6f s\n", ticks * (1.0 / CLOCKS_PER_SEC));
+    printf("(%i) Elapsed Wtime: %14.6f s (%5.1f%% CPU)\n", proc_rank, wtime, 100.0*ticks*(1.0/CLOCKS_PER_SEC) / wtime);
 }
 
 void Debug(char *mesg, int terminate)
