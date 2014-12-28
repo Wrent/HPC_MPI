@@ -279,15 +279,15 @@ void Setup_Proc_Grid(int argc, char **argv) {
   wrap_around[X_DIR] = 0;
   wrap_around[Y_DIR] = 0;
   reorder = 1;
-  MPI_Cart_create(MPI_COMM_WORLD, 2, P_grid, wrap_around, reorder, grid_comm);
+  MPI_Cart_create(MPI_COMM_WORLD, 2, P_grid, wrap_around, reorder, &grid_comm);
 
   MPI_Comm_rank(grid_comm, &proc_rank);
   MPI_Cart_coords(grid_comm, proc_rank, 2, proc_coord);
 
   printf("(%i) (x,y)=(%i,%i)\n", proc_rank, proc_coord[X_DIR], proc_coord[Y_DIR]);
 
-  MPI_Cart_shift(grid_comm, Y_DIR, 1, proc_top, proc_bottom);
-  MPI_Cart_shift(grid_comm, X_DIR, 1, proc_left, proc_right);
+  MPI_Cart_shift(grid_comm, Y_DIR, 1, &proc_top, &proc_bottom);
+  MPI_Cart_shift(grid_comm, X_DIR, 1, &proc_left, &proc_right);
 
   //if(DEBUG)
     printf("(%i) top %i, right %i, bottom %i, left %i\n", proc_rank, proc_top, proc_right, proc_bottom, proc_left);
