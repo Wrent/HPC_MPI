@@ -105,7 +105,7 @@ void Setup_Grid()
   Debug("Setup_Subgrid", 0);
 
   if(proc_rank==0) {
-    Debug("opening");
+    Debug("opening", 0);
     f = fopen("input.dat", "r");
     if (f == NULL)
       Debug("Error opening input.dat", 1);
