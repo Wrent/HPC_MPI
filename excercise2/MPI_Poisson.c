@@ -71,7 +71,7 @@ void stop_timer()
   if (timer_on)
   {
     ticks = clock() - ticks;
-    wtime = MPI_Wtime - wtime;
+    wtime = MPI_Wtime() - wtime;
     timer_on = 0;
   }
 }
