@@ -56,6 +56,9 @@ void start_timer();
 void resume_timer();
 void stop_timer();
 void print_timer();
+void Setup_Proc_Grid(int argc, char **argv);
+void Setup_MPI_Datatypes();
+void Exchange_Borders();
 
 void start_timer()
 {
@@ -331,6 +334,7 @@ void Setup_MPI_Datatypes() {
 void Exchange_Borders() {
   Debug("Exchange_Borders", 0);
 
+/*
   //traffic in top direction
   MPI_Sendrecv(&phi[1][], 1, border_type[Y_DIR], proc_top, 0, &phi[1][], 1, border_type[Y_DIR], proc_bottom, 0, grid_comm, &status);
   //traffic in bottom direction
@@ -339,6 +343,7 @@ void Exchange_Borders() {
   MPI_Sendrecv(&phi[1][], 1, border_type[Y_DIR], proc_top, 0, &phi[1][], 1, border_type[Y_DIR], proc_bottom, 0, grid_comm, &status);
   //traffic in right direction
   MPI_Sendrecv(&phi[1][], 1, border_type[Y_DIR], proc_top, 0, &phi[1][], 1, border_type[Y_DIR], proc_bottom, 0, grid_comm, &status);
+  */
 }
 
 int main(int argc, char **argv)
