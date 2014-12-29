@@ -351,11 +351,13 @@ int main(int argc, char **argv)
 {
   MPI_Init(&argc, &argv);
   Setup_Proc_Grid(argc, argv);
-  Setup_MPI_Datatypes();
+  
 
   start_timer();
 
   Setup_Grid();
+
+  Setup_MPI_Datatypes();
 
   Solve();
 
