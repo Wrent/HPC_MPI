@@ -221,13 +221,11 @@ double Do_Step(int parity)
   /* calculate interior of grid */
   for (x = 1; x < dim[X_DIR] - 1; x++)
     for (y = 1; y < dim[Y_DIR] - 1; y++)
-      if ((x + y) % 2 == parity && source[x][y] != 1)
-      {
-	old_phi = phi[x][y];
-	phi[x][y] = (phi[x + 1][y] + phi[x - 1][y] +
-		     phi[x][y + 1] + phi[x][y - 1]) * 0.25;
-	if (max_err < fabs(old_phi - phi[x][y]))
-	  max_err = fabs(old_phi - phi[x][y]);
+      if ((x + offset[X_DIR] + y + offset[Y_DIR]) % 2 == parity && source[x][y] != 1) {
+      	old_phi = phi[x][y];
+      	phi[x][y] = (phi[x + 1][y] + phi[x - 1][y] + phi[x][y + 1] + phi[x][y - 1]) * 0.25;
+      	if (max_err < fabs(old_phi - phi[x][y]))
+      	   max_err = fabs(old_phi - phi[x][y]);
       }
 
   return max_err;
