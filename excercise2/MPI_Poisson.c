@@ -244,10 +244,14 @@ void Solve()
   {
     Debug("Do_Step 0", 0);
     delta1 = Do_Step(0);
+    
     Exchange_Borders();
+
     Debug("Do_Step 1", 0);
     delta2 = Do_Step(1);
+
     Exchange_Borders();
+
     delta = max(delta1, delta2);
     printf("(%i) %f\n", proc_rank, delta);
     count++;
