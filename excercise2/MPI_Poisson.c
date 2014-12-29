@@ -292,6 +292,8 @@ void Clean_Up()
   free(phi);
   free(source[0]);
   free(source);
+
+  Debug("Finished Clean_Up", 0);
 }
 
 void Setup_Proc_Grid(int argc, char **argv) {
