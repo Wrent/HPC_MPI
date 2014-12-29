@@ -9,7 +9,7 @@
 #include <math.h>
 #include <time.h>
 
-#define DEBUG 0
+#define DEBUG 1
 
 #define max(a,b) ((a)>(b)?a:b)
 
