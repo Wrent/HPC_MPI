@@ -289,9 +289,13 @@ void Clean_Up()
   Debug("Clean_Up", 0);
 
   free(phi[0]);
+  Debug("Finished Phi[0]", 0);
   free(phi);
+  Debug("Finished Phi", 0);
   free(source[0]);
+  Debug("Finished Source[0]", 0);
   free(source);
+  Debug("Finished Source", 0);
 
   Debug("Finished Clean_Up", 0);
 }
