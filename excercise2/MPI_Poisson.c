@@ -249,7 +249,7 @@ void Solve()
     delta2 = Do_Step(1);
     Exchange_Borders();
     delta = max(delta1, delta2);
-    printf("(%i) %f\n", delta);
+    printf("(%i) %f\n", proc_rank, delta);
     count++;
   }
 
