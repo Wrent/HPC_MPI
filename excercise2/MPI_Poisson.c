@@ -9,7 +9,7 @@
 #include <math.h>
 #include <time.h>
 
-#define DEBUG 1
+#define DEBUG 0
 
 #define max(a,b) ((a)>(b)?a:b)
 
@@ -32,7 +32,9 @@ int proc_top, proc_right, proc_bottom, proc_left;
 int P;
 int P_grid[2];
 MPI_Comm grid_comm;
-MPI_Status statis;
+MPI_Status status;
+
+MPI_Datatype border_type[2];
 
 /* benchmark related variables */
 clock_t ticks;			/* number of systemticks */
@@ -136,10 +138,13 @@ void Setup_Grid()
   upper_offset[Y_DIR] = gridsize[Y_DIR] * (proc_coord[Y_DIR] + 1) / P_grid[Y_DIR];
   /* Calculate dimensions of local subgrid */
   dim[Y_DIR] = upper_offset[Y_DIR] - offset[Y_DIR];
-  dim[X_DIR] = upper_offset[X_DIR] = offset[X_DIR];
+  dim[X_DIR] = upper_offset[X_DIR] - offset[X_DIR];
 
   dim[Y_DIR] += 2;
   dim[X_DIR] += 2;
+
+  if(DEBUG)
+    printf("(%i) dim X: %i, dim Y: %i\n", proc_rank, dim[X_DIR], dim[Y_DIR]);
 
 
 
@@ -234,10 +239,10 @@ void Solve()
   {
     Debug("Do_Step 0", 0);
     delta1 = Do_Step(0);
-
+    Exchange_Borders();
     Debug("Do_Step 1", 0);
     delta2 = Do_Step(1);
-
+    Exchange_Borders();
     delta = max(delta1, delta2);
     printf("(%i) %f\n", delta);
     count++;
@@ -311,11 +316,36 @@ void Setup_Proc_Grid(int argc, char **argv) {
     printf("(%i) top %i, right %i, bottom %i, left %i\n", proc_rank, proc_top, proc_right, proc_bottom, proc_left);
 }
 
+void Setup_MPI_Datatypes() {
+  Debug("Setup_MPI_Datatypes", 0);
+
+  //vertical
+  MPI_Type_vector(dim[X_DIR] - 2, 1, dim[Y_DIR], MPI_DOUBLE, &border_type[Y_DIR]);
+  MPI_Type_commit(&border_type[Y_DIR]);
+
+  //horizontal
+  MPI_Type_vector(dim[Y_DIR] - 2, 1, dim[X_DIR], MPI_DOUBLE, &border_type[X_DIR]);
+  MPI_Type_commit(&border_type[X_DIR]);
+}
+
+void Exchange_Borders() {
+  Debug("Exchange_Borders", 0);
+
+  //traffic in top direction
+  MPI_Sendrecv(&phi[1][], 1, border_type[Y_DIR], proc_top, 0, &phi[1][], 1, border_type[Y_DIR], proc_bottom, 0, grid_comm, &status);
+  //traffic in bottom direction
+  MPI_Sendrecv(&phi[1][], 1, border_type[Y_DIR], proc_top, 0, &phi[1][], 1, border_type[Y_DIR], proc_bottom, 0, grid_comm, &status);
+  //traffic in left direction
+  MPI_Sendrecv(&phi[1][], 1, border_type[Y_DIR], proc_top, 0, &phi[1][], 1, border_type[Y_DIR], proc_bottom, 0, grid_comm, &status);
+  //traffic in right direction
+  MPI_Sendrecv(&phi[1][], 1, border_type[Y_DIR], proc_top, 0, &phi[1][], 1, border_type[Y_DIR], proc_bottom, 0, grid_comm, &status);
+}
+
 int main(int argc, char **argv)
 {
   MPI_Init(&argc, &argv);
   Setup_Proc_Grid(argc, argv);
-
+  Setup_MPI_Datatypes();
 
   start_timer();
 
