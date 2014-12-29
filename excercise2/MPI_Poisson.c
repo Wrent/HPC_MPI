@@ -36,6 +36,8 @@ MPI_Status status;
 
 MPI_Datatype border_type[2];
 
+double global_delta;
+
 /* benchmark related variables */
 clock_t ticks;			/* number of systemticks */
 int timer_on = 0;		/* is timer running? */
@@ -238,13 +240,13 @@ void Solve()
   Debug("Solve", 0);
 
   /* give global_delta a higher value then precision_goal */
-  delta = 2 * precision_goal;
+  global_delta = 2 * precision_goal;
 
-  while (delta > precision_goal && count < max_iter)
+  while (global_delta > precision_goal && count < max_iter)
   {
     Debug("Do_Step 0", 0);
     delta1 = Do_Step(0);
-    
+
     Exchange_Borders();
 
     Debug("Do_Step 1", 0);
@@ -253,7 +255,8 @@ void Solve()
     Exchange_Borders();
 
     delta = max(delta1, delta2);
-    printf("(%i) %f\n", proc_rank, delta);
+    MPI_Allreduce(&delta, &global_delta, 1, MPI_DOUBLE, MPI_MAX, grid_comm);
+    printf("(%i) delta: %f, global_delta: %f\n", proc_rank, delta, global_delta);
     count++;
   }
 
