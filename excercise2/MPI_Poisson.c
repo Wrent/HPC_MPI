@@ -322,6 +322,7 @@ void Setup_Proc_Grid(int argc, char **argv) {
 void Setup_MPI_Datatypes() {
   Debug("Setup_MPI_Datatypes", 0);
 
+  printf("(%i) dim X: %i, dim Y: %i\n", proc_rank, dim[X_DIR], dim[Y_DIR]);
   //vertical
   MPI_Type_vector(dim[X_DIR] - 2, 1, dim[Y_DIR], MPI_DOUBLE, &border_type[Y_DIR]);
   MPI_Type_commit(&border_type[Y_DIR]);
