@@ -380,7 +380,7 @@ void Setup_MPI_Datatypes() {
   MPI_Type_commit(&border_type[Y_DIR]);
 
   //horizontal
-  MPI_Type_vector(dim[Y_DIR] - 2, 1, dim[X_DIR], MPI_DOUBLE, &border_type[X_DIR]);
+  MPI_Type_vector(dim[Y_DIR] - 2, 1, 1, MPI_DOUBLE, &border_type[X_DIR]);
   MPI_Type_commit(&border_type[X_DIR]);
 }
 
@@ -396,10 +396,15 @@ void Exchange_Borders() {
   MPI_Sendrecv(&phi[1][1], 1, border_type[Y_DIR], proc_bottom, 0, &phi[1][dim[Y_DIR] - 1], 1, border_type[Y_DIR], proc_top, 0, grid_comm, &status);
   //traffic in left direction
   printf("(%i) Accesing left phi[1][1], phi[%i][1]\n", proc_rank, dim[X_DIR] - 1);
-  MPI_Sendrecv(&phi[1][1], 1, border_type[Y_DIR], proc_left, 0, &phi[dim[X_DIR] - 1][1], 1, border_type[Y_DIR], proc_right, 0, grid_comm, &status);
+  
+  
+  MPI_Sendrecv(&phi[1][1], 1, border_type[X_DIR], proc_left, 0,
+     &phi[dim[X_DIR] - 1][1], 1, border_type[X_DIR], proc_right, 0, grid_comm, &status);
+  
+
   //traffic in right direction
   printf("(%i) Accesing right phi[%i][1], phi[0][1]\n", proc_rank, dim[X_DIR] - 2);
-  MPI_Sendrecv(&phi[dim[X_DIR] - 2][1], 1, border_type[Y_DIR], proc_right, 0, &phi[0][1], 1, border_type[Y_DIR], proc_left, 0, grid_comm, &status);
+  MPI_Sendrecv(&phi[dim[X_DIR] - 2][1], 1, border_type[X_DIR], proc_right, 0, &phi[0][1], 1, border_type[X_DIR], proc_left, 0, grid_comm, &status);
   
 }
 
