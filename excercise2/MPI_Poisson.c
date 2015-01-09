@@ -246,6 +246,7 @@ void Solve()
   int count = 0;
   double delta;
   double delta1, delta2;
+  int sweeps = 1;
 
   Debug("Solve", 0);
 
@@ -254,18 +255,27 @@ void Solve()
 
   while (global_delta > precision_goal && count < max_iter)
   {
-    Debug("Do_Step 0", 0);
-    delta1 = Do_Step(0);
+    // Debug("Do_Step 0", 0);
+    // delta1 = Do_Step(0);
 
-    Exchange_Borders();
+    // Exchange_Borders();
 
-    Debug("Do_Step 1", 0);
-    delta2 = Do_Step(1);
+    // Debug("Do_Step 1", 0);
+    // delta2 = Do_Step(1);
+    int i;
+    for(i = 0; i < sweeps; i++) {
+      printf("do step");
+      delta1 = Do_Step(0);
+      delta2 = Do_Step(1);
+    }
 
     Exchange_Borders();
 
     delta = max(delta1, delta2);
-    MPI_Allreduce(&delta, &global_delta, 1, MPI_DOUBLE, MPI_MAX, grid_comm);
+    //if(proc_rank == 1)
+      //printf("%i\t%f\n", count, delta);
+    if(count % 10 == 0)
+      MPI_Allreduce(&delta, &global_delta, 1, MPI_DOUBLE, MPI_MAX, grid_comm);
     if(DEBUG)
       printf("(%i) delta: %f, global_delta: %f\n", proc_rank, delta, global_delta);
     count++;
