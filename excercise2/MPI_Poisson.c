@@ -411,7 +411,7 @@ void Setup_Grid()
       void Exchange_Borders() {
 
         Debug("Exchange_Borders", 0);
-        communication += 2*sizeof(border_type[Y_DIR]) + 2*sizeof(border_type[X_DIR]);
+        communication += 2*sizeof(MPI_DOUBLE)*(dim[X_DIR] - 2) + 2*sizeof(MPI_DOUBLE)*(dim[Y_DIR] - 2);
 
   //traffic in top direction
         MPI_Sendrecv(&phi[1][dim[Y_DIR] - 2], 1, border_type[Y_DIR], proc_bottom, 0, &phi[1][0], 1, border_type[Y_DIR], proc_top, 0, grid_comm, &status);
@@ -445,6 +445,7 @@ void Setup_Grid()
 
         print_timer();
         printf("communication: %i\n", communication);
+        printf("sizeof: %i\n", 2*sizeof(MPI_DOUBLE)*(dim[X_DIR] - 2) + 2*sizeof(MPI_DOUBLE)*(dim[Y_DIR] - 2));
         Clean_Up();
         MPI_Finalize();
 
