@@ -409,6 +409,7 @@ void Setup_Grid()
       }
 
       void Exchange_Borders() {
+        resume_timer();
         Debug("Exchange_Borders", 0);
 
 
@@ -421,7 +422,7 @@ void Setup_Grid()
          &phi[dim[X_DIR] - 1][1], 1, border_type[X_DIR], proc_right, 0, grid_comm, &status);
   //traffic in right direction
         MPI_Sendrecv(&phi[dim[X_DIR] - 2][1], 1, border_type[X_DIR], proc_right, 0, &phi[0][1], 1, border_type[X_DIR], proc_left, 0, grid_comm, &status);
-
+        stop_timer();
       }
 
       int main(int argc, char **argv)
@@ -433,6 +434,7 @@ void Setup_Grid()
 
 
         start_timer();
+        stop_timer();
 
         Setup_Grid();
 
