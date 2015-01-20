@@ -51,7 +51,7 @@ double **phi;			/* grid */
 int **source;			/* TRUE if subgrid element is a source */
 int dim[2];			/* grid dimensions */
 
-
+int communication = 0;
 
 
 void Setup_Grid();
@@ -409,9 +409,9 @@ void Setup_Grid()
       }
 
       void Exchange_Borders() {
-        resume_timer();
-        Debug("Exchange_Borders", 0);
 
+        Debug("Exchange_Borders", 0);
+        communication += 2*sizeof(border_type[Y_DIR]) + 2*sizeof(border_type[X_DIR]);
 
   //traffic in top direction
         MPI_Sendrecv(&phi[1][dim[Y_DIR] - 2], 1, border_type[Y_DIR], proc_bottom, 0, &phi[1][0], 1, border_type[Y_DIR], proc_top, 0, grid_comm, &status);
@@ -422,7 +422,7 @@ void Setup_Grid()
          &phi[dim[X_DIR] - 1][1], 1, border_type[X_DIR], proc_right, 0, grid_comm, &status);
   //traffic in right direction
         MPI_Sendrecv(&phi[dim[X_DIR] - 2][1], 1, border_type[X_DIR], proc_right, 0, &phi[0][1], 1, border_type[X_DIR], proc_left, 0, grid_comm, &status);
-        stop_timer();
+ 
       }
 
       int main(int argc, char **argv)
@@ -434,7 +434,6 @@ void Setup_Grid()
 
 
         start_timer();
-        stop_timer();
 
         Setup_Grid();
 
@@ -445,7 +444,7 @@ void Setup_Grid()
         Write_Grid();
 
         print_timer();
-
+        printf("communication: %i\n", communication);
         Clean_Up();
         MPI_Finalize();
 
