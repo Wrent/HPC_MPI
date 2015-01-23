@@ -1,0 +1,9 @@
+sizeX: 320
+sizeY: 320	
+nPartX: 100
+nPartY: 100
+nCellX: 1
+nCellY: 1
+steps: 500
+dt: 0.01
+logs: n
